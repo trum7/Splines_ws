@@ -13,6 +13,8 @@ import frames.input.*;
 import frames.primitives.*;
 import frames.core.*;
 import frames.processing.*;
+import java.lang.Math;
+import java.util.ArrayList;
 
 // global variables
 // modes: 0 natural cubic spline; 1 Hermite;
@@ -27,6 +29,16 @@ boolean drawGrid = true, drawCtrl = true;
 //Choose P3D for a 3D scene, or P2D or JAVA2D for a 2D scene
 String renderer = P3D;
 
+// variables
+ArrayList<Method> splines = new ArrayList<Method>();
+PVector [] empty = {};
+boolean change = false;
+int numberofcp = 8;
+Frame [] control_points = new Frame[numberofcp];
+boolean set = true;
+
+
+
 void setup() {
   size(800, 800, renderer);
   scene = new Scene(this);
@@ -39,18 +51,22 @@ void setup() {
   scene.setRadius(150);
   scene.fitBallInterpolation();
   interpolator = new Interpolator(scene, new Frame());
-  // framesjs next version, simply go:
-  //interpolator = new Interpolator(scene);
-
-  // Using OrbitNodes makes path editable
-  for (int i = 0; i < 8; i++) {
-    Node ctrlPoint = new OrbitNode(scene);
-    ctrlPoint.randomize();
-    interpolator.addKeyFrame(ctrlPoint);
-  }
+  
+  splines.add(new Natural());
+  splines.add(new Hermite());
+  splines.add(new Bezier());
+  Bezier mode2 = new Bezier();
+  mode2.setName("Cubic Bezier");
+  splines.add(mode2);
+  getControlPoints();
+  
 }
 
 void draw() {
+  if (change){
+    getControlPoints();
+    change=false;
+  }
   background(175);
   if (drawGrid) {
     stroke(255, 255, 0);
@@ -59,23 +75,61 @@ void draw() {
   if (drawCtrl) {
     fill(255, 0, 0);
     stroke(255, 0, 255);
-    for (Frame frame : interpolator.keyFrames())
+    for (Frame frame : interpolator.keyFrames()){
       scene.drawPickingTarget((Node)frame);
+    }
   } else {
     fill(255, 0, 0);
     stroke(255, 0, 255);
     scene.drawPath(interpolator);
+    for (Frame frame : interpolator.keyFrames()){
+      scene.drawPickingTarget((Node)frame);
+    }
+    splines.get(mode).setPoints(control_points);
+    splines.get(mode).Points();  
   }
-  // implement me
-  // draw curve according to control polygon an mode
-  // To retrieve the positions of the control points do:
-  // for(Frame frame : interpolator.keyFrames())
-  //   frame.position();
+
+}
+
+void getControlPoints(){
+  
+  if(control_points.length != 0){
+    control_points = new Frame[numberofcp]; 
+    interpolator = new Interpolator(scene, new Frame());
+  }  
+  for (int i = 0; i < numberofcp; i++) {
+    Node ctrlPoint = new OrbitNode(scene);
+    ctrlPoint.randomize();
+    interpolator.addKeyFrame(ctrlPoint);  
+    control_points[i] =((Frame)ctrlPoint);
+  }
+  
 }
 
 void keyPressed() {
-  if (key == ' ')
+  if (key == ' '){
     mode = mode < 3 ? mode+1 : 0;
+    change = true;
+    switch(mode){
+      case 0:
+        numberofcp = 4;
+        Natural temp = (Natural)splines.get(mode);
+        temp.resizeMatrix();
+        break;
+      case 1:
+        set = true;
+        numberofcp = 8;
+        break;
+      case 2:
+        numberofcp = 4;  
+        break;
+      case 3:
+        numberofcp = 4;
+        break;    
+    }
+    
+  } 
+  
   if (key == 'g')
     drawGrid = !drawGrid;
   if (key == 'c')
