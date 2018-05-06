@@ -2,6 +2,9 @@ class Bezier extends Method{
 
   Frame [] control_points;
   String methodName = "Bezier";
+  float R = 0;
+  float G = 255;
+  float B = 255;
   @Override
   public String name(){
     return this.methodName;
@@ -9,6 +12,9 @@ class Bezier extends Method{
 
  public void setName(String name){
    this.methodName = name;
+   this.R = 102;
+   this.G = 128;
+   this.B = 221;
  }
   @Override
   public void setPoints(Frame[] cp){
@@ -25,9 +31,8 @@ class Bezier extends Method{
     }
     // now recurse though control points (col is color) 
     // with one fewer control points for each step
-    float col = 0;
     while (Q.length > 0) {
-      stroke(col,255,255);
+      stroke(R,G,B);
       strokeWeight(2);
       // this adds a point to the memorised bezier up to the current u value:
       if (Q.length == 1) {

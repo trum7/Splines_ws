@@ -48,8 +48,7 @@ class Natural extends Method{
    this.Z = gather(pz);
    for(int n = 0; n < d-1; n++ ){
      for(float u = 0; u <= 1.0; u += 0.0002){
-      float col = 220;
-      stroke(col,255,0);
+      stroke(230,230,250);
       strokeWeight(2);
       PVector w = NaturalFuncion(u,n);
       point(w.x, w.y, w.z);  

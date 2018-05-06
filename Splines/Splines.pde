@@ -87,6 +87,7 @@ void draw() {
     }
     splines.get(mode).setPoints(control_points);
     splines.get(mode).Points();  
+    titles( splines.get(mode).name(), numberofcp);
   }
 
 }
@@ -106,6 +107,16 @@ void getControlPoints(){
   
 }
 
+void titles(String name, int numP){
+  scene.beginScreenCoordinates();
+  textSize(30);
+  fill(65,105,225);
+  text("Spline: " + name, 50, 35);
+  fill(102,0,214);
+  text("Points: "+ numP, 420, 35);
+  scene.endScreenCoordinates();
+}
+
 void keyPressed() {
   if (key == ' '){
     mode = mode < 3 ? mode+1 : 0;
@@ -121,13 +132,12 @@ void keyPressed() {
         numberofcp = 8;
         break;
       case 2:
-        numberofcp = 4;  
+        numberofcp = 8;  
         break;
       case 3:
         numberofcp = 4;
         break;    
-    }
-    
+    }    
   } 
   
   if (key == 'g')
